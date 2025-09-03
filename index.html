@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel Analyzer</title>
+    <link rel="icon" href="bar img.webp">
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">📊 Excel Analyzer</div>
+            <div class="nav-buttons">
+                <span class="user-info" id="userInfo"></span>
+                <button class="btn btn-secondary" id="logoutBtn" onclick="logout()" style="display: none;">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Welcome Page -->
+        <div id="welcomePage" class="page active">
+            <div class="welcome-section">
+                <h1 class="welcome-title">Welcome to Excel Analyzer</h1>
+                <p class="welcome-subtitle">
+                    A powerful platform for uploading Excel files, analyzing data, and generating interactive 2D and 3D charts. 
+                    Transform your data into meaningful insights with our advanced visualization tools.
+                </p>
+                
+                <div class="access-cards">
+                    <div class="access-card">
+                        <h3>👤 User Access</h3>
+                        <p style="color: rgba(255,255,255,0.8); margin-bottom: 20px; font-size: 14px;">
+                            Upload files, create charts, analyze data
+                        </p>
+                        <div class="access-buttons">
+                            <button class="btn btn-primary" onclick="showUserLogin()">User Login</button>
+                            <button class="btn btn-secondary" onclick="showUserSignup()">User Signup</button>
+                        </div>
+                    </div>
+                    
+                    <div class="access-card">
+                        <h3>👨‍💼 Admin Access</h3>
+                        <p style="color: rgba(255,255,255,0.8); margin-bottom: 20px; font-size: 14px;">
+                            Monitor users, manage uploads
+                        </p>
+                        <div class="access-buttons">
+                            <button class="btn btn-primary" onclick="showAdminLogin()">Admin Login</button>
+                        </div>
+                    </div>
+                    
+                    <div class="access-card">
+                        <h3>⚡ Super Admin</h3>
+                        <p style="color: rgba(255,255,255,0.8); margin-bottom: 20px; font-size: 14px;">
+                            System administration
+                        </p>
+                        <div class="access-buttons">
+                            <button class="btn btn-primary" onclick="showSuperAdminLogin()">Super Admin</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Login Page -->
+        <div id="userLoginPage" class="page">
+            <div class="card" style="max-width: 400px; margin: 0 auto;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h2 style="color: #333;">👤 User Login</h2>
+                    <p style="color: #666;">Access your personal dashboard</p>
+                </div>
+                <form id="userLoginForm" onsubmit="handleUserLogin(event)">
+                    <div class="form-group">
+                        <label for="userLoginEmail">Email</label>
+                        <input type="email" id="userLoginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userLoginPassword">Password</label>
+                        <input type="password" id="userLoginPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Login as User</button>
+                </form>
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="#" onclick="showUserSignup()" style="color: #667eea;">Don't have an account? Sign up</a><br>
+                    <a href="#" onclick="showWelcome()" style="color: #666; font-size: 14px;">← Back to welcome</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Signup Page -->
+        <div id="userSignupPage" class="page">
+            <div class="card" style="max-width: 400px; margin: 0 auto;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h2 style="color: #333;">👤 User Registration</h2>
+                    <p style="color: #666;">Create your user account</p>
+                </div>
+                <form id="userSignupForm" onsubmit="handleUserSignup(event)">
+                    <div class="form-group">
+                        <label for="userSignupName">Full Name</label>
+                        <input type="text" id="userSignupName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userSignupEmail">Email</label>
+                        <input type="email" id="userSignupEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userSignupPassword">Password</label>
+                        <input type="password" id="userSignupPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Create User Account</button>
+                </form>
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="#" onclick="showUserLogin()" style="color: #667eea;">Already have an account? Login</a><br>
+                    <a href="#" onclick="showWelcome()" style="color: #666; font-size: 14px;">← Back to welcome</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Login Page -->
+        <div id="adminLoginPage" class="page">
+            <div class="card" style="max-width: 400px; margin: 0 auto;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h2 style="color: #333;">👨‍💼 Admin Login</h2>
+                    <p style="color: #666;">Access admin dashboard</p>
+                </div>
+                <form id="adminLoginForm" onsubmit="handleAdminLogin(event)">
+                    <div class="form-group">
+                        <label for="adminLoginEmail">Admin Email</label>
+                        <input type="email" id="adminLoginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="adminLoginPassword">Admin Password</label>
+                        <input type="password" id="adminLoginPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Login as Admin</button>
+                </form>
+                <div style="text-align: center; margin-top: 20px;">
+                    <p style="color: #666; font-size: 14px;">
+                        💡 <strong>Note:</strong> Admin accounts must be approved by Super Admin
+                    </p>
+                    <a href="#" onclick="showWelcome()" style="color: #666; font-size: 14px;">← Back to welcome</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Super Admin Login Page -->
+        <div id="superAdminLoginPage" class="page">
+            <div class="card" style="max-width: 400px; margin: 0 auto;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h2 style="color: #333;">⚡ Super Admin Login</h2>
+                    <p style="color: #666;">System administrator access</p>
+                </div>
+                <form id="superAdminLoginForm" onsubmit="handleSuperAdminLogin(event)">
+                    <div class="form-group">
+                        <label for="superAdminLoginEmail">Super Admin Email</label>
+                        <input type="email" id="superAdminLoginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="superAdminLoginPassword">Super Admin Password</label>
+                        <input type="password" id="superAdminLoginPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Login as Super Admin</button>
+                </form>
+                <div style="text-align: center; margin-top: 20px;">
+                    <div style="background: rgba(255,193,7,0.1); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                        <p style="color: #856404; font-size: 14px; margin: 0;">
+                            <strong>test login:</strong><br>
+                            Email: superadmin@excelviz.com<br>
+                            Password: superadmin123
+                        </p>
+                    </div>
+                    <a href="#" onclick="showWelcome()" style="color: #666; font-size: 14px;">← Back to welcome</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Dashboard -->
+        <div id="userDashboard" class="page">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                    <h2 style="color: #333;">User Dashboard</h2>
+                    <button class="btn btn-primary" onclick="requestAdminRole()" id="adminRequestBtn">Request Admin Role</button>
+                </div>
+
+                <!-- File Upload Section -->
+                <div class="card">
+                    <h3 style="margin-bottom: 20px; color: #333;">Upload Excel File</h3>
+                    <div class="file-upload" onclick="document.getElementById('excelFile').click()">
+                        <div class="upload-icon">📁</div>
+                        <h4>Click to upload Excel file</h4>
+                        <p>Supports .xlsx and .xls formats</p>
+                        <input type="file" id="excelFile" accept=".xlsx,.xls" onchange="handleFileUpload(event)">
+                    </div>
+                </div>
+
+                <!-- Chart Generation -->
+                <div class="card" id="chartSection" style="display: none;">
+                    <h3 style="margin-bottom: 20px; color: #333;">Generate Charts</h3>
+                    <div class="chart-controls">
+                        <select id="chartType">
+                            <option value="bar">Bar Chart</option>
+                            <option value="line">Line Chart</option>
+                            <option value="pie">Pie Chart</option>
+                            <option value="scatter">Scatter Plot</option>
+                        </select>
+                        <select id="xAxis">
+                            <option value="">Select X Axis</option>
+                        </select>
+                        <select id="yAxis">
+                            <option value="">Select Y Axis</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="generateChart()">Generate Chart</button>
+                        <button class="btn btn-secondary" onclick="downloadChart()">Download Chart</button>
+                        <button class="btn btn-secondary" onclick="exportToMongoDB()">Export to MongoDB</button>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="dataChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Data Preview -->
+                <div class="card" id="dataPreview" style="display: none;">
+                    <h3 style="margin-bottom: 20px; color: #333;">Data Preview</h3>
+                    <div class="table-container" id="dataTable"></div>
+                </div>
+
+                <!-- Upload History -->
+                <div class="card">
+                    <h3 style="margin-bottom: 20px; color: #333;">Upload History</h3>
+                    <div class="table-container" id="uploadHistory"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div id="adminDashboard" class="page">
+            <div class="card">
+                <h2 style="color: #333; margin-bottom: 30px;">Admin Dashboard</h2>
+                
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalUsers">0</div>
+                        <div class="stat-label">Total Users</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalUploads">0</div>
+                        <div class="stat-label">Total Uploads</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="activeUsers">0</div>
+                        <div class="stat-label">Active Users</div>
+                    </div>
+                </div>
+
+                <!-- User Management -->
+                <div class="card">
+                    <h3 style="margin-bottom: 20px; color: #333;">User Management</h3>
+                    <div class="table-container" id="userManagement"></div>
+                </div>
+
+                <!-- Upload Monitoring -->
+                <div class="card">
+                    <h3 style="margin-bottom: 20px; color: #333;">Upload Monitoring</h3>
+                    <div class="table-container" id="uploadMonitoring"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Super Admin Dashboard -->
+        <div id="superAdminDashboard" class="page">
+            <div class="card">
+                <h2 style="color: #333; margin-bottom: 30px;">Super Admin Dashboard</h2>
+
+                <!-- Admin Requests -->
+                <div class="card">
+                    <h3 style="margin-bottom: 20px; color: #333;">Admin Role Requests</h3>
+                    <div id="adminRequests"></div>
+                </div>
+
+                <!-- System Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalAdmins">0</div>
+                        <div class="stat-label">Total Admins</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="pendingRequests">0</div>
+                        <div class="stat-label">Pending Requests</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="systemUptime">100%</div>
+                        <div class="stat-label">System Uptime</div>
+                    </div>
+                </div>
+
+                <!-- All Users -->
+                <div class="card">
+                    <h3 style="margin-bottom: 20px; color: #333;">All Users</h3>
+                    <div class="table-container" id="allUsers"></div>
+                </div>
+
+                <!-- System Monitoring -->
+                <div class="card">
+                    <h3 style="margin-bottom: 20px; color: #333;">System Activity</h3>
+                    <div class="table-container" id="systemActivity"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <script  src="backend.js"></script>
+      
+    
+</body>
+</html>
